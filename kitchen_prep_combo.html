@@ -1,453 +1,541 @@
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="bn">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kitchen Prep Combo Set - Checkout</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<!-- <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet"> -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@100..800&family=Noto+Sans+Bengali:wght@100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Public+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-<style>
-  /* body { font-family: 'Hind Siliguri', sans-serif; } */
-  body { font-family: "Anek Bangla", sans-serif; }
-  .img-placeholder {
-    background-color: #e5e7eb;
-    background-image:
-      linear-gradient(45deg, #d1d5db 25%, transparent 25%),
-      linear-gradient(-45deg, #d1d5db 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, #d1d5db 75%),
-      linear-gradient(-45deg, transparent 75%, #d1d5db 75%);
-    background-size: 20px 20px;
-    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #6b7280;
-    text-align: center;
-    font-size: 0.85rem;
-    padding: 1rem;
-  }
-  /* ══ URGENCY BAR (RED) — matches reference source exactly ══ */
-  @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-  }
-  .urgency-bar {
-    background: linear-gradient(90deg, #9a3412, #c2410c, #ea580c, #c2410c, #9a3412);
-    background-size: 300% 100%;
-    animation: shimmer 4s linear infinite;
-    color: #fff;
-    padding: 11px 44px 11px 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 19px;
-    font-weight: 800;
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    overflow-x: auto;
-  }
-  .urgency-inner {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: nowrap;
-    margin: 0 auto;
-  }
-  .urgency-msg {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-  .urgency-timer {
-    background: rgba(255, 255, 255, 0.18);
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    padding: 6px 26px;
-    border-radius: 20px;
-    font-weight: 800;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-  .urgency-btn {
-    background: #fff;
-    color: #b91c1c;
-    padding: 8px 18px;
-    border-radius: 20px;
-    font-weight: 800;
-    font-size: 16px;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    white-space: nowrap;
-    transition: 0.2s;
-    flex-shrink: 0;
-  }
-  .urgency-btn:hover { transform: translateY(-1px); color: #991b1b; }
-  .urgency-close {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.9);
-    color: #b91c1c;
-    border: none;
-    font-size: 11px;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    cursor: pointer;
-    line-height: 1;
-    transition: 0.2s;
-    padding: 0;
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-  .urgency-close:hover { background: #fff; transform: translateY(-50%) scale(1.08); }
-
-  @media (max-width: 576px) {
-    .urgency-bar { padding: 10px 42px 10px 10px; }
-    .urgency-inner { flex-wrap: wrap; justify-content: center; row-gap: 8px; }
-    .urgency-msg { flex: 0 0 100%; justify-content: center; }
-    .urgency-close { top: 12px; transform: none; }
-    .urgency-close:hover { transform: scale(1.08); }
-  }
-</style>
-</head>
-<body class="bg-white text-gray-900">
-
-  <!-- ============ TOP URGENCY BAR ============ -->
-  <!-- EDIT: ডিসকাউন্ট %, বার্তা, বাটন লিংক পরিবর্তন করুন -->
-  <div class="urgency-bar" id="urgencyBar">
-    <div class="urgency-inner">
-      <span class="urgency-msg">⚠️ স্টক সীমিত <strong>৩৩% ছাড়</strong> পেতে অর্ডার করুন</span>
-      <span class="urgency-timer">⏱ <span id="ubh">00</span>:<span id="ubm">00</span></span>
-      <a href="#order-form" class="urgency-btn">অর্ডার করুন →</a>
-    </div>
-    <button type="button" class="urgency-close" aria-label="বন্ধ করুন"
-      onclick="document.getElementById('urgencyBar').style.display='none'">✕</button>
-  </div>
-
-  <script>
-    /* ══ URGENCY TIMER — persists a random countdown per visitor via localStorage ══ */
-    (function () {
-      var K = 'kitchenComboTimer';
-      function getEnd() {
-        var v = null;
-        try { v = localStorage.getItem(K); } catch (e) {}
-        var now = Date.now();
-        if (v && +v > now) return +v;
-        // EDIT: কাউন্টডাউন কত সময়ের মধ্যে থাকবে (এখানে ১-৩ ঘন্টার মধ্যে র‍্যান্ডম)
-        var end = now + (Math.floor(Math.random() * 3) + 1) * 3600000 + Math.random() * 1800000;
-        try { localStorage.setItem(K, end); } catch (e) {}
-        return end;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kitchen Prep Combo Set - Checkout</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@100..800&family=Noto+Sans+Bengali:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      html { scroll-behavior: smooth; }
+      body { font-family: "Anek Bangla", sans-serif; }
+      .img-placeholder {
+        background-color: #e5e7eb;
+        background-image:
+          linear-gradient(45deg, #d1d5db 25%, transparent 25%),
+          linear-gradient(-45deg, #d1d5db 25%, transparent 25%),
+          linear-gradient(45deg, transparent 75%, #d1d5db 75%),
+          linear-gradient(-45deg, transparent 75%, #d1d5db 75%);
+        background-size: 20px 20px;
+        background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        display: flex; align-items: center; justify-content: center;
+        color: #6b7280; text-align: center; font-size: 0.85rem; padding: 1rem;
       }
-      function pad(n) { return String(n).padStart(2, '0'); }
-      function tick() {
-        var remaining = getEnd() - Date.now();
-        if (remaining < 0) {
-          try { localStorage.removeItem(K); } catch (e) {}
-          remaining = getEnd() - Date.now();
-        }
-        var set = function (id, val) {
-          var el = document.getElementById(id);
-          if (el) el.textContent = val;
-        };
-        set('ubh', pad(Math.floor(remaining / 3600000) % 24));
-        set('ubm', pad(Math.floor(remaining / 60000) % 60));
+
+      /* ══ URGENCY BAR ══ */
+      @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+      .urgency-bar {
+        background: linear-gradient(90deg, #9a3412, #c2410c, #ea580c, #c2410c, #9a3412);
+        background-size: 300% 100%;
+        animation: shimmer 4s linear infinite;
+        color: #fff; padding: 11px 44px 11px 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 19px; font-weight: 800;
+        position: sticky; top: 0; z-index: 50; overflow-x: auto;
       }
-      tick();
-      setInterval(tick, 1000);
-    })();
-  </script>
+      .urgency-inner { display: flex; align-items: center; gap: 10px; flex-wrap: nowrap; margin: 0 auto; }
+      .urgency-msg { display: flex; align-items: center; gap: 5px; white-space: nowrap; flex-shrink: 0; }
+      .urgency-timer {
+        background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.35);
+        padding: 6px 26px; border-radius: 20px; font-weight: 800; font-size: 16px;
+        display: flex; align-items: center; gap: 4px; white-space: nowrap; flex-shrink: 0;
+      }
+      .urgency-btn {
+        background: #fff; color: #c2410c; padding: 8px 18px; border-radius: 20px;
+        font-weight: 800; font-size: 16px; display: inline-flex; align-items: center;
+        gap: 4px; white-space: nowrap; transition: 0.2s; flex-shrink: 0;
+      }
+      .urgency-btn:hover { transform: translateY(-1px); color: #9a3412; }
+      .urgency-close {
+        width: 20px; height: 20px; border-radius: 50%; background: rgba(255,255,255,0.9);
+        color: #c2410c; border: none; font-size: 11px; font-weight: 800;
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        cursor: pointer; line-height: 1; transition: 0.2s; padding: 0;
+        position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      }
+      .urgency-close:hover { background: #fff; transform: translateY(-50%) scale(1.08); }
 
-  <!-- ============ HERO SECTION ============ -->
-  <section class="max-w-3xl mx-auto px-5 pt-10 pb-6 text-center">
-    <h1 class="text-2xl md:text-4xl font-extrabold leading-snug">
-      রান্নাঘরের সব প্রয়োজন এক প্যাকেজে <br>
-      <span class="text-orange-700">Kitchen Prep Combo Set</span> ব্যবহার করুন
-    </h1>
-    <p class="mt-3 text-gray-600">৪-ইন-১ কিচেন এসেনশিয়াল বান্ডেল</p>
+      @media (max-width: 576px) {
+        .urgency-bar { padding: 10px 42px 10px 10px; }
+        .urgency-inner { flex-wrap: wrap; justify-content: center; row-gap: 8px; }
+        .urgency-msg { flex: 0 0 100%; justify-content: center; }
+        .urgency-close { top: 12px; transform: none; }
+        .urgency-close:hover { transform: scale(1.08); }
+      }
+      /* ══ ORDER BUTTON PULSE GLOW — matches reference's pulseGold effect ══ */
+      @keyframes pulseOrange {
+        0% { box-shadow: 0 0 0 0 rgba(194, 65, 12, 0.55); }
+        70% { box-shadow: 0 0 0 12px rgba(194, 65, 12, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(194, 65, 12, 0); }
+      }
+      .pulse-cta {
+        animation: pulseOrange 2s infinite;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+      .pulse-cta:hover {
+        animation: none;
+        transform: translateY(-2px);
+      }
+    </style>
+  </head>
+  <body class="bg-white text-gray-900">
 
-    <!-- Product image box -->
-    <div class="mt-8 border-4 border-orange-700 rounded-xl max-w-md mx-auto p-4">
-      <div class="img-placeholder w-full aspect-square rounded-lg" data-image-slot="hero-product">
-        [ কম্বো সেটের প্রধান ছবি এখানে বসান — 500x500px ]
+    <!-- ============ TOP URGENCY BAR ============ -->
+    <div class="urgency-bar" id="urgencyBar">
+      <div class="urgency-inner">
+        <span class="urgency-msg">⚠️ স্টক সীমিত <strong data-text="discountPercent"></strong> ছাড় পেতে অর্ডার করুন</span>
+        <span class="urgency-timer">⏱ <span id="ubh">00</span>:<span id="ubm">00</span></span>
+        <a href="#order-form" class="urgency-btn">অর্ডার করুন →</a>
       </div>
+      <button type="button" class="urgency-close" aria-label="বন্ধ করুন"
+        onclick="document.getElementById('urgencyBar').style.display='none'">✕</button>
     </div>
 
-    <button class="mt-6 inline-flex items-center gap-2 bg-orange-700 hover:bg-orange-800 text-white font-semibold px-8 py-3 rounded-md">
-      🛒 অর্ডার করতে ক্লিক করুন
-    </button>
-  </section>
+    <!-- ============ HERO SECTION ============ -->
+    <section class="max-w-3xl mx-auto px-5 pt-10 pb-6 text-center">
+      <h1 class="text-2xl md:text-4xl font-extrabold leading-snug">
+        রান্নাঘরের সব প্রয়োজন এক প্যাকেজে <br />
+        <span class="text-orange-700" data-text="productName"></span> ব্যবহার করুন
+      </h1>
+      <p class="mt-3 text-gray-600" data-text="tagline"></p>
 
-  <!-- ============ VIDEO / DEMO SECTION ============ -->
-  <section class="max-w-4xl mx-auto px-5 pb-10">
-    <div class="img-placeholder w-full aspect-video rounded-lg relative" data-image-slot="video-thumbnail">
-      [ প্রোডাক্ট ডেমো ভিডিও / থাম্বনেইল এখানে বসান ]
-      <div class="absolute inset-0 flex items-center justify-center">
-        <div class="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center">
-          <div class="w-0 h-0 border-t-8 border-b-8 border-l-[14px] border-t-transparent border-b-transparent border-l-white ml-1"></div>
+      <div class="mt-8 border-4 border-orange-700 rounded-xl max-w-md mx-auto p-4">
+        <div class="w-full aspect-square rounded-lg overflow-hidden">
+          <img data-img="hero" alt="" class="w-full h-full object-cover rounded-lg" />
         </div>
       </div>
-    </div>
-  </section>
 
-  <!-- ============ INTRO / DESCRIPTION SECTION ============ -->
-  <section class="bg-orange-50 py-12">
-    <div class="max-w-3xl mx-auto px-5 text-center">
-      <h2 class="text-xl md:text-2xl font-bold text-orange-800 mb-4">
-        রান্নাঘরের প্রয়োজনীয় সব টুলস এক প্যাকেজে!
-      </h2>
-      <p class="text-gray-700 leading-relaxed">
-        রান্নাঘরের কাজ এখন হবে আরও দ্রুত, সহজ ও সুরক্ষিত! এই কমপ্লিট কিচেন প্রেপ কম্বো সেটে রয়েছে
-        ভেজিটেবল চপার/ডাইসার, হ্যান্ড প্রেস চপার, সিলিকন গ্লাভস, মশলা বক্স ও ফিঙ্গার গার্ড — প্রতিদিনের
-        রান্নার প্রস্তুতিকে করে তুলবে আরও গোছানো ও ঝামেলামুক্ত। প্রতিটি আইটেম আলাদাভাবে কেনার বদলে
-        একসাথে পেয়ে যাচ্ছেন সম্পূর্ণ কিচেন সলিউশন, যা প্রিয়জনকে গিফট দেওয়ার জন্যও দারুণ একটি চয়েস।
+      <a href="#order-form" class="pulse-cta mt-6 inline-flex items-center gap-2 bg-orange-700 hover:bg-orange-800 text-white font-semibold px-8 py-3 rounded-md">
+        <svg class="cart-icon" fill="white" width="20px" height="20px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.5,19A1.5,1.5,0,1,0,10,20.5,1.5,1.5,0,0,0,8.5,19ZM19,16H7a1,1,0,0,1,0-2h8.49121A3.0132,3.0132,0,0,0,18.376,11.82422L19.96143,6.2749A1.00009,1.00009,0,0,0,19,5H6.73907A3.00666,3.00666,0,0,0,3.92139,3H3A1,1,0,0,0,3,5h.92139a1.00459,1.00459,0,0,1,.96142.7251l.15552.54474.00024.00506L6.6792,12.01709A3.00006,3.00006,0,0,0,7,18H19a1,1,0,0,0,0-2ZM17.67432,7l-1.2212,4.27441A1.00458,1.00458,0,0,1,15.49121,12H8.75439l-.25494-.89221L7.32642,7ZM16.5,19A1.5,1.5,0,1,0,18,20.5,1.5,1.5,0,0,0,16.5,19Z"/></svg>অর্ডার করতে ক্লিক করুন
+      </a>
+    </section>
+
+    <!-- ============ VIDEO / DEMO SECTION ============ -->
+    <section class="max-w-4xl mx-auto px-5 pb-10">
+      <div
+        id="video-player"
+        class="w-full aspect-video rounded-lg relative overflow-hidden bg-gray-200 cursor-pointer"
+        onclick="playDemoVideo()"
+      >
+        <img data-img="videoThumbnail" alt="" class="w-full h-full object-cover" />
+        <div class="absolute inset-0 flex items-center justify-center">
+          <div class="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center">
+            <div class="w-0 h-0 border-t-8 border-b-8 border-l-[14px] border-t-transparent border-b-transparent border-l-white ml-1"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ INTRO / DESCRIPTION SECTION ============ -->
+    <section class="bg-orange-50 py-12">
+      <div class="max-w-3xl mx-auto px-5 text-center">
+        <h2 class="text-xl md:text-2xl font-bold text-orange-800 mb-4">
+          রান্নাঘরের প্রয়োজনীয় সব টুলস এক প্যাকেজে!
+        </h2>
+        <p class="text-gray-700 leading-relaxed" data-text="description"></p>
+      </div>
+    </section>
+
+    <!-- ============ WHAT'S INCLUDED SECTION ============ -->
+    <section id="items" class="py-14 scroll-mt-24 sm:scroll-mt-16">
+      <div class="max-w-4xl mx-auto px-5">
+        <h2 class="text-2xl md:text-3xl font-bold text-center text-orange-800 mb-2">
+          এই কম্বোতে যা যা থাকছে
+        </h2>
+        <div class="w-24 h-0.5 bg-orange-700 mx-auto mb-10"></div>
+
+        <div class="grid md:grid-cols-2 gap-8" id="items-grid">
+          <!-- item cards injected by JS from CONFIG.items -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ KEY FEATURES SECTION ============ -->
+   <section id="features" class="bg-slate-50 py-14 scroll-mt-24 sm:scroll-mt-16">
+      <div class="max-w-4xl mx-auto px-5">
+        <h2 class="text-2xl md:text-3xl font-bold text-center text-orange-800 mb-2">
+          মূল বৈশিষ্ট্য (Key Features)
+        </h2>
+        <div class="w-24 h-0.5 bg-orange-700 mx-auto mb-10"></div>
+
+        <div class="grid md:grid-cols-2 gap-10 items-start">
+          <ul class="space-y-4" id="features-list">
+            <!-- features injected by JS from CONFIG.features -->
+          </ul>
+
+          <div class="w-full aspect-[4/5] rounded-lg overflow-hidden">
+            <img data-img="feature" alt="" class="w-full h-full object-cover rounded-lg" />
+          </div>
+        </div>
+
+        <div class="text-center mt-10">
+          <a href="#order-form" class="pulse-cta inline-flex items-center gap-2 bg-orange-700 hover:bg-orange-800 text-white font-semibold px-8 py-3 rounded-md">
+          <svg class="cart-icon" fill="white" width="20px" height="20px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.5,19A1.5,1.5,0,1,0,10,20.5,1.5,1.5,0,0,0,8.5,19ZM19,16H7a1,1,0,0,1,0-2h8.49121A3.0132,3.0132,0,0,0,18.376,11.82422L19.96143,6.2749A1.00009,1.00009,0,0,0,19,5H6.73907A3.00666,3.00666,0,0,0,3.92139,3H3A1,1,0,0,0,3,5h.92139a1.00459,1.00459,0,0,1,.96142.7251l.15552.54474.00024.00506L6.6792,12.01709A3.00006,3.00006,0,0,0,7,18H19a1,1,0,0,0,0-2ZM17.67432,7l-1.2212,4.27441A1.00458,1.00458,0,0,1,15.49121,12H8.75439l-.25494-.89221L7.32642,7ZM16.5,19A1.5,1.5,0,1,0,18,20.5,1.5,1.5,0,0,0,16.5,19Z"/></svg>অর্ডার করতে ক্লিক করুন
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PRICE BANNER ============ -->
+    <section class="bg-orange-900 text-white text-center py-10 px-5">
+      <p class="text-xl md:text-2xl font-semibold mb-2">
+        খুচরা মূল্য -
+        <span class="line-through decoration-red-400 decoration-2" data-price="regularDisplay"></span>
       </p>
+      <p class="text-2xl md:text-3xl font-bold">
+        অফার মূল্য মাত্র-
+        <span class="text-green-400" data-price="offerDisplay"></span>
+      </p>
+    </section>
+
+    <!-- ============ CALL + CTA ============ -->
+    <div class="flex flex-col items-center gap-4 py-8 px-5">
+      <a data-phone-href="tel" class="bg-yellow-400 hover:bg-yellow-500 text-orange-950 font-bold px-6 py-3 rounded-md flex items-center gap-2">
+        📞 ফোন করুনঃ <span data-text="phone"></span>
+      </a>
+      <a href="#order-form" class="pulse-cta bg-orange-700 hover:bg-orange-800 text-white font-semibold px-8 py-3 rounded-md flex items-center gap-2">
+        <svg class="cart-icon" fill="white" width="20px" height="20px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.5,19A1.5,1.5,0,1,0,10,20.5,1.5,1.5,0,0,0,8.5,19ZM19,16H7a1,1,0,0,1,0-2h8.49121A3.0132,3.0132,0,0,0,18.376,11.82422L19.96143,6.2749A1.00009,1.00009,0,0,0,19,5H6.73907A3.00666,3.00666,0,0,0,3.92139,3H3A1,1,0,0,0,3,5h.92139a1.00459,1.00459,0,0,1,.96142.7251l.15552.54474.00024.00506L6.6792,12.01709A3.00006,3.00006,0,0,0,7,18H19a1,1,0,0,0,0-2ZM17.67432,7l-1.2212,4.27441A1.00458,1.00458,0,0,1,15.49121,12H8.75439l-.25494-.89221L7.32642,7ZM16.5,19A1.5,1.5,0,1,0,18,20.5,1.5,1.5,0,0,0,16.5,19Z"/></svg>অর্ডার করতে ক্লিক করুন
+      </a>
     </div>
-  </section>
 
-  <!-- ============ WHAT'S INCLUDED SECTION ============ -->
-  <section class="py-14">
-    <div class="max-w-4xl mx-auto px-5">
-      <h2 class="text-2xl md:text-3xl font-bold text-center text-orange-800 mb-2">
-        এই কম্বোতে যা যা থাকছে
-      </h2>
-      <div class="w-24 h-0.5 bg-orange-700 mx-auto mb-10"></div>
+    <!-- ============ ORDER FORM ============ -->
+    <section id="order-form" class="max-w-4xl mx-auto px-5 pb-16 sm:scroll-mt-20 scroll-mt-28">
+      <div class="border border-gray-300 rounded-lg p-6 md:p-10">
+        <h2 class="text-xl md:text-2xl font-bold text-center mb-8">
+          অর্ডার করতে নিচের ফর্মটি পূরণ করুন
+        </h2>
 
-      <div class="grid md:grid-cols-2 gap-8">
-        <!-- Item 1 -->
-        <div class="flex gap-4 items-start border border-gray-200 rounded-lg p-4">
-          <div class="img-placeholder w-24 h-24 shrink-0 rounded-md" data-image-slot="item-chopper">img</div>
+        <div class="grid md:grid-cols-2 gap-10">
+          <!-- Billing & Shipping -->
           <div>
-            <h3 class="font-semibold mb-1">মাল্টি-ব্লেড ভেজিটেবল চপার/ডাইসার</h3>
-            <p class="text-sm text-gray-600">একাধিক ব্লেড দিয়ে সবজি বিভিন্ন সাইজে কাটা যায়, সাথে কন্টেইনার থাকায় কাটা সবজি সরাসরি জমা হয়।</p>
-          </div>
-        </div>
-        <!-- Item 2 -->
-        <div class="flex gap-4 items-start border border-gray-200 rounded-lg p-4">
-          <div class="img-placeholder w-24 h-24 shrink-0 rounded-md" data-image-slot="item-hand-press">img</div>
-          <div>
-            <h3 class="font-semibold mb-1">হ্যান্ড প্রেস চপার</h3>
-            <p class="text-sm text-gray-600">এক চাপে পেঁয়াজ, রসুন, মরিচ কুচি করার জন্য পারফেক্ট।</p>
-          </div>
-        </div>
-        <!-- Item 3 -->
-        <div class="flex gap-4 items-start border border-gray-200 rounded-lg p-4">
-          <div class="img-placeholder w-24 h-24 shrink-0 rounded-md" data-image-slot="item-gloves">img</div>
-          <div>
-            <h3 class="font-semibold mb-1">সিলিকন কিচেন গ্লাভস</h3>
-            <p class="text-sm text-gray-600">গরম বা পানির কাজে হাতকে সুরক্ষা দেয়, নন-স্লিপ গ্রিপ।</p>
-          </div>
-        </div>
-        <!-- Item 4 -->
-        <div class="flex gap-4 items-start border border-gray-200 rounded-lg p-4">
-          <div class="img-placeholder w-24 h-24 shrink-0 rounded-md" data-image-slot="item-finger-guard">img</div>
-          <div>
-            <h3 class="font-semibold mb-1">ফিঙ্গার প্রোটেক্টর সেট</h3>
-            <p class="text-sm text-gray-600">আঙুল কাটা থেকে বাঁচাতে এক্সট্রা সেফটি লেয়ার।</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+            <h3 class="font-semibold text-lg mb-4">Billing &amp; Shipping</h3>
 
-  <!-- ============ KEY FEATURES SECTION ============ -->
-  <section class="bg-slate-50 py-14">
-    <div class="max-w-4xl mx-auto px-5">
-      <h2 class="text-2xl md:text-3xl font-bold text-center text-orange-800 mb-2">
-        মূল বৈশিষ্ট্য (Key Features)
-      </h2>
-      <div class="w-24 h-0.5 bg-orange-700 mx-auto mb-10"></div>
+            <label class="block mb-4">
+              <span class="block text-sm font-medium mb-1">আপনার নাম <span class="text-red-600">*</span></span>
+              <input type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-700" />
+            </label>
 
-      <div class="grid md:grid-cols-2 gap-10 items-start">
-        <!-- Feature list -->
-        <ul class="space-y-4">
-          <li class="flex gap-3">
-            <span class="text-green-600 mt-1">✔</span>
-            <span><strong>সব টুলস এক প্যাকেজে</strong> — আলাদা আলাদা কেনার ঝামেলা নেই, খরচও সাশ্রয়ী</span>
-          </li>
-          <li class="flex gap-3">
-            <span class="text-green-600 mt-1">✔</span>
-            <span><strong>রান্নার প্রস্তুতির সময় বাঁচায়</strong> — সবজি কাটা থেকে মশলা গোছানো, সবকিছু দ্রুত হয়</span>
-          </li>
-          <li class="flex gap-3">
-            <span class="text-green-600 mt-1">✔</span>
-            <span><strong>হাতের সুরক্ষা নিশ্চিত করে</strong> — গ্লাভস ও ফিঙ্গার গার্ড কাটা-পোড়া থেকে বাঁচায়</span>
-          </li>
-          <li class="flex gap-3">
-            <span class="text-green-600 mt-1">✔</span>
-            <span><strong>উচ্চমানের ফুড-গ্রেড ম্যাটেরিয়াল</strong> — সব আইটেম ব্যবহারে সম্পূর্ণ নিরাপদ</span>
-          </li>
-          <li class="flex gap-3">
-            <span class="text-green-600 mt-1">✔</span>
-            <span><strong>সহজে পরিষ্কারযোগ্য</strong> — প্রতিটি টুল সহজে ধোয়া ও মেইনটেইন করা যায়</span>
-          </li>
-          <li class="flex gap-3">
-            <span class="text-green-600 mt-1">✔</span>
-            <span><strong>কমপ্যাক্ট ও স্পেস-সেভিং</strong> — কিচেনে জায়গা কম লাগে</span>
-          </li>
-          <li class="flex gap-3">
-            <span class="text-green-600 mt-1">✔</span>
-            <span>নতুন সংসার শুরু করা কাপল বা যেকোনো হাউজহোল্ডের জন্য পারফেক্ট</span>
-          </li>
-          <li class="flex gap-3">
-            <span class="text-green-600 mt-1">✔</span>
-            <span>গিফট হিসেবেও দেওয়ার জন্য দারুণ একটি প্র্যাক্টিক্যাল প্যাকেজ</span>
-          </li>
-        </ul>
+            <label class="block mb-4">
+              <span class="block text-sm font-medium mb-1">মোবাইল নাম্বার <span class="text-red-600">*</span></span>
+              <input type="tel" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-700" />
+            </label>
 
-        <!-- Feature image -->
-        <div class="img-placeholder w-full aspect-[4/5] rounded-lg" data-image-slot="feature-image">
-          [ কম্বো সেটের লাইফস্টাইল ছবি এখানে বসান ]
-        </div>
-      </div>
+            <label class="block mb-4">
+              <span class="block text-sm font-medium mb-1">সম্পূর্ণ ঠিকানা <span class="text-red-600">*</span></span>
+              <input type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-700" />
+            </label>
 
-      <div class="text-center mt-10">
-        <button class="inline-flex items-center gap-2 bg-orange-700 hover:bg-orange-800 text-white font-semibold px-8 py-3 rounded-md">
-          🛒 অর্ডার করতে ক্লিক করুন
-        </button>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ PRICE BANNER ============ -->
-  <!-- EDIT: প্রাইস বসান -->
-  <section class="bg-orange-900 text-white text-center py-10 px-5">
-    <p class="text-xl md:text-2xl font-semibold mb-2">
-      খুচরা মূল্য - <span class="line-through decoration-red-400 decoration-2">[EDIT: রেগুলার প্রাইস] টাকা</span>
-    </p>
-    <p class="text-2xl md:text-3xl font-bold">
-      অফার মূল্য মাত্র- <span class="text-green-400">[EDIT: অফার প্রাইস] টাকা</span>
-    </p>
-  </section>
-
-  <!-- ============ CALL + CTA ============ -->
-  <!-- EDIT: ফোন নাম্বার বসান -->
-  <div class="flex flex-col items-center gap-4 py-8 px-5">
-    <a href="tel:0000000000" class="bg-yellow-400 hover:bg-yellow-500 text-orange-950 font-bold px-6 py-3 rounded-md flex items-center gap-2">
-      📞 ফোন করুনঃ [EDIT: ফোন নাম্বার]
-    </a>
-    <button class="bg-orange-700 hover:bg-orange-800 text-white font-semibold px-8 py-3 rounded-md flex items-center gap-2">
-      🛒 অর্ডার করতে ক্লিক করুন
-    </button>
-  </div>
-
-  <!-- ============ ORDER FORM ============ -->
-  <!-- EDIT: প্রোডাক্ট প্রাইস, শিপিং, টোটাল আপডেট করুন -->
-  <section id="order-form" class="max-w-4xl mx-auto px-5 pb-16 scroll-mt-20">
-    <div class="border border-gray-300 rounded-lg p-6 md:p-10">
-      <h2 class="text-xl md:text-2xl font-bold text-center mb-8">
-        অর্ডার করতে নিচের ফর্মটি পূরণ করুন
-      </h2>
-
-      <div class="grid md:grid-cols-2 gap-10">
-        <!-- Billing & Shipping -->
-        <div>
-          <h3 class="font-semibold text-lg mb-4">Billing &amp; Shipping</h3>
-
-          <label class="block mb-4">
-            <span class="block text-sm font-medium mb-1">আপনার নাম <span class="text-red-600">*</span></span>
-            <input type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-700">
-          </label>
-
-          <label class="block mb-4">
-            <span class="block text-sm font-medium mb-1">মোবাইল নাম্বার <span class="text-red-600">*</span></span>
-            <input type="tel" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-700">
-          </label>
-
-          <label class="block mb-4">
-            <span class="block text-sm font-medium mb-1">সম্পূর্ণ ঠিকানা <span class="text-red-600">*</span></span>
-            <input type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-700">
-          </label>
-
-          <div>
-            <span class="block text-sm font-medium mb-1">Country / Region <span class="text-red-600">*</span></span>
-            <p class="text-gray-700">Bangladesh</p>
-          </div>
-        </div>
-
-        <!-- Order summary -->
-        <div>
-          <h3 class="font-semibold text-lg mb-4">Your order</h3>
-
-          <div class="flex justify-between border-b border-gray-200 pb-3 mb-3 text-sm font-medium text-gray-600">
-            <span>Product</span>
-            <span>Subtotal</span>
-          </div>
-
-          <div class="flex items-center justify-between border-b border-gray-200 pb-4 mb-4">
-            <div class="flex items-center gap-3">
-              <div class="img-placeholder w-12 h-12 rounded" data-image-slot="cart-thumbnail">img</div>
-              <span class="text-sm">Kitchen Prep Combo Set (৪-ইন-১)&nbsp;&nbsp;×&nbsp;1</span>
-            </div>
-            <span class="text-sm whitespace-nowrap">[EDIT: প্রাইস]৳</span>
-          </div>
-
-          <div class="flex justify-between border-b border-gray-200 pb-3 mb-3">
-            <span>Subtotal</span>
-            <span>[EDIT: প্রাইস]৳</span>
-          </div>
-
-          <div class="border-b border-gray-200 pb-3 mb-3">
-            <div class="flex justify-between mb-2">
-              <span>Shipping</span>
-              <label class="flex items-center gap-2 text-sm">
-                <input type="radio" name="shipping" checked>
-                Outside Dhaka: [EDIT]৳
-              </label>
-            </div>
-            <div class="flex justify-end">
-              <label class="flex items-center gap-2 text-sm">
-                <input type="radio" name="shipping">
-                Inside Dhaka: [EDIT]৳
-              </label>
+            <div>
+              <span class="block text-sm font-medium mb-1">Country / Region <span class="text-red-600">*</span></span>
+              <p class="text-gray-700">Bangladesh</p>
             </div>
           </div>
 
-          <div class="flex justify-between font-semibold text-lg mb-6">
-            <span>Total</span>
-            <span>[EDIT: টোটাল]৳</span>
+          <!-- Order summary -->
+          <div>
+            <h3 class="font-semibold text-lg mb-4">Your order</h3>
+
+            <div class="flex justify-between border-b border-gray-200 pb-3 mb-3 text-sm font-medium text-gray-600">
+              <span>Product</span>
+              <span>Subtotal</span>
+            </div>
+
+            <div class="flex items-center justify-between border-b border-gray-200 pb-4 mb-4">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded overflow-hidden">
+                  <img data-img="cartThumbnail" alt="" class="w-full h-full object-cover rounded" />
+                </div>
+                <span class="text-sm"><span data-text="productName"></span> (৪-ইন-১)&nbsp;&nbsp;×&nbsp;1</span>
+              </div>
+              <span class="text-sm whitespace-nowrap" data-price="offerDisplay"></span>
+            </div>
+
+            <div class="flex justify-between border-b border-gray-200 pb-3 mb-3">
+              <span>Subtotal</span>
+              <span data-price="offerDisplay"></span>
+            </div>
+
+            <div class="border-b border-gray-200 pb-3 mb-3">
+              <div class="flex justify-between mb-2">
+                <span>Shipping</span>
+                <label class="flex items-center gap-2 text-sm">
+                  <input type="radio" name="shipping" value="outside" data-shipping-radio checked />
+                  Outside Dhaka: <span data-price="shippingOutsideDisplay"></span>
+                </label>
+              </div>
+              <div class="flex justify-end">
+                <label class="flex items-center gap-2 text-sm">
+                  <input type="radio" name="shipping" value="inside" data-shipping-radio />
+                  Inside Dhaka: <span data-price="shippingInsideDisplay"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="flex justify-between font-semibold text-lg mb-6">
+              <span>Total</span>
+              <span data-price="totalDisplay"></span>
+            </div>
+
+            <div class="bg-slate-50 border border-gray-200 rounded-md p-4 mb-4">
+              <p class="font-medium mb-1">Cash on delivery</p>
+              <p class="text-sm text-gray-600">Pay with cash upon delivery.</p>
+            </div>
+
+            <p class="text-xs text-gray-500 mb-4">
+              আপনার তথ্য শুধুমাত্র অর্ডার প্রসেস করার জন্য ব্যবহার করা হবে।
+              <a href="https://www.prodhan.com/privacy-policy" target="_blank" rel="noopener" class="underline">Privacy Policy</a>
+            </p>
+
+            <button class="pulse-cta w-full bg-orange-900 hover:bg-orange-800 text-white font-semibold py-3 rounded-md flex items-center justify-center gap-2">
+              🔒 Place Order&nbsp; <span data-price="totalDisplay"></span>
+            </button>
           </div>
-
-          <div class="bg-slate-50 border border-gray-200 rounded-md p-4 mb-4">
-            <p class="font-medium mb-1">Cash on delivery</p>
-            <p class="text-sm text-gray-600">Pay with cash upon delivery.</p>
-          </div>
-
-          <p class="text-xs text-gray-500 mb-4">
-            Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our
-            <a href="#" class="underline">privacy policy</a>.
-          </p>
-
-          <button class="w-full bg-orange-900 hover:bg-orange-800 text-white font-semibold py-3 rounded-md flex items-center justify-center gap-2">
-            🔒 Place Order&nbsp; [EDIT: টোটাল]৳
-          </button>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ============ FOOTER ============ -->
-  <footer class="bg-black text-gray-300 text-sm py-6 px-5 flex flex-col md:flex-row items-center justify-between gap-3 max-w-6xl mx-auto">
-    <p>© 2024 [EDIT: শপ নাম]. All rights reserved.</p>
-    <div class="flex gap-6">
-      <a href="#" class="hover:text-white">Privacy policy</a>
-      <a href="#" class="hover:text-white">Terms of service</a>
-    </div>
-  </footer>
+    <!-- ============ FOOTER ============ -->
+    <footer class="bg-black text-gray-400 text-sm pt-10 pb-5">
+      <div class="max-w-6xl mx-auto px-5">
+        <div class="grid gap-8 md:grid-cols-3">
+          <div>
+            <a href="https://www.prodhan.com" target="_blank" rel="noopener">
+              <img src="https://storage.biddabari.online/biddabari-bucket/uploads/all/9qz4cAe0HhgiQIbXSOOgm3JpVRU0M2bWyelwfijt.webp" alt="" class="h-9 w-auto mb-3" />
+            </a>
+            <p class="text-gray-500 leading-relaxed">
+              বিশ্বাস, মানসম্মত পণ্য ও দ্রুত ডেলিভারির মাধ্যমে সারাদেশের গ্রাহকদের আস্থার প্রতিষ্ঠান।
+              সঠিক দামে নির্ভরযোগ্য পণ্য ও আন্তরিক সেবা নিশ্চিত করাই আমাদের অঙ্গীকার।
+            </p>
+          </div>
+          <div>
+            <h5 class="text-white text-lg font-extrabold mb-3">যোগাযোগ</h5>
+             <p class="mb-1">📞 <a href="tel:+8809643330000">+880 9643-330000</a></p>
+                <p class="mb-1">🌐 <a href="https://www.prodhan.com" target="_blank" rel="noopener">www.prodhan.com</a></p>
+                <p class="mb-1">📍 ঢাকা, বাংলাদেশ</p>
+          </div>
+          <div>
+            <h5 class="text-white text-lg font-extrabold mb-3">দ্রুত লিংক</h5>
+            <p class="mb-1"><a href="#items" class="hover:text-orange-400">প্রোডাক্ট আইটেম</a></p>
+            <p class="mb-1"><a href="#features" class="hover:text-orange-400">মূল বৈশিষ্ট্য</a></p>
+            <p class="mb-1"><a href="#order-form" class="hover:text-orange-400">অর্ডার করুন</a></p>
+          </div>
+        </div>
+        <div class="text-center" style="border-top: 1px solid #2b2b2b; margin-top: 24px; padding-top: 16px; font-size: 0.82rem; color: #8f8f8f;">
+         Copyright © 2026 Prodhan. All rights reserved
+        </div>
+      </div>
+    </footer>
 
-</body>
+    <!-- ══════════════════════════════════════════════════════════
+         SINGLE SOURCE OF TRUTH — সব ডাটা ও ইমেজ লিংক এখানে বসান।
+         পুরো পেজের সব জায়গায় এখান থেকেই মান বসে যাবে।
+    ══════════════════════════════════════════════════════════ -->
+    <script>
+      const CONFIG = {
+        shopName: "prodhan.com",
+        phone: "+8809643330000",
+        productName: "Kitchen Prep Combo Set",
+        tagline: "৪-ইন-১ কিচেন এসেনশিয়াল বান্ডেল",
+        description:
+          "রান্নাঘরের কাজ এখন হবে আরও দ্রুত, সহজ ও সুরক্ষিত! এই কমপ্লিট কিচেন প্রেপ কম্বো সেটে রয়েছে ভেজিটেবল চপার/ডাইসার, হ্যান্ড প্রেস চপার, সিলিকন গ্লাভস, মশলা বক্স ও ফিঙ্গার গার্ড — প্রতিদিনের রান্নার প্রস্তুতিকে করে তুলবে আরও গোছানো ও ঝামেলামুক্ত। প্রতিটি আইটেম আলাদাভাবে কেনার বদলে একসাথে পেয়ে যাচ্ছেন সম্পূর্ণ কিচেন সলিউশন, যা প্রিয়জনকে গিফট দেওয়ার জন্যও দারুণ একটি চয়েস।",
+
+        // ডেমো ভিডিও — শুধু ইউটিউব ভিডিও আইডি বসান, থাম্বনেইল অটোমেটিক লোড হবে
+        demoVideoId: "TyMZIALMKvA",
+
+        // এখানেই সব ইমেজ লিংক — একবার বদলালে পুরো পেজে বদলে যাবে
+        images: {
+          hero: "https://storage.biddabari.online/biddabari-bucket/uploads/all/prodhan_asset/kitchen_prep_combo_asset/hero.webp",
+          feature: "https://storage.biddabari.online/biddabari-bucket/uploads/all/prodhan_asset/kitchen_prep_combo_asset/hero.webp",
+          cartThumbnail: "https://storage.biddabari.online/biddabari-bucket/uploads/all/prodhan_asset/kitchen_prep_combo_asset/hero.webp",
+        },
+
+        // "এই কম্বোতে যা যা থাকছে" সেকশনের আইটেমগুলো
+        items: [
+          {
+            image: "https://storage.biddabari.online/biddabari-bucket/uploads/all/prodhan_asset/kitchen_prep_combo_asset/chopper.webp",
+            title: "মাল্টি-ব্লেড ভেজিটেবল চপার/ডাইসার",
+            desc: "একাধিক ব্লেড দিয়ে সবজি বিভিন্ন সাইজে কাটা যায়, সাথে কন্টেইনার থাকায় কাটা সবজি সরাসরি জমা হয়।",
+          },
+          {
+            image: "https://storage.biddabari.online/biddabari-bucket/uploads/all/prodhan_asset/kitchen_prep_combo_asset/hand_press_chopper.webp",
+            title: "হ্যান্ড প্রেস চপার",
+            desc: "এক চাপে পেঁয়াজ, রসুন, মরিচ কুচি করার জন্য পারফেক্ট।",
+          },
+          {
+            image: "https://storage.biddabari.online/biddabari-bucket/uploads/all/prodhan_asset/kitchen_prep_combo_asset/kitchen_gloves.webp",
+            title: "সিলিকন কিচেন গ্লাভস",
+            desc: "গরম বা পানির কাজে হাতকে সুরক্ষা দেয়, নন-স্লিপ গ্রিপ।",
+          },
+          {
+            image: "https://storage.biddabari.online/biddabari-bucket/uploads/all/prodhan_asset/kitchen_prep_combo_asset/finger_safe_guard .webp",
+            title: "ফিঙ্গার প্রোটেক্টর সেট",
+            desc: "আঙুল কাটা থেকে বাঁচাতে এক্সট্রা সেফটি লেয়ার।",
+          },
+        ],
+
+        // "মূল বৈশিষ্ট্য" সেকশনের বুলেট পয়েন্ট
+        features: [
+          { bold: "সব টুলস এক প্যাকেজে", rest: "আলাদা আলাদা কেনার ঝামেলা নেই, খরচও সাশ্রয়ী" },
+          { bold: "রান্নার প্রস্তুতির সময় বাঁচায়", rest: "সবজি কাটা থেকে মশলা গোছানো, সবকিছু দ্রুত হয়" },
+          { bold: "হাতের সুরক্ষা নিশ্চিত করে", rest: "গ্লাভস ও ফিঙ্গার গার্ড কাটা-পোড়া থেকে বাঁচায়" },
+          { bold: "উচ্চমানের ফুড-গ্রেড ম্যাটেরিয়াল", rest: "সব আইটেম ব্যবহারে সম্পূর্ণ নিরাপদ" },
+          { bold: "সহজে পরিষ্কারযোগ্য", rest: "প্রতিটি টুল সহজে ধোয়া ও মেইনটেইন করা যায়" },
+          { bold: "কমপ্যাক্ট ও স্পেস-সেভিং", rest: "কিচেনে জায়গা কম লাগে" },
+          { bold: null, rest: "নতুন সংসার শুরু করা কাপল বা যেকোনো হাউজহোল্ডের জন্য পারফেক্ট" },
+          { bold: null, rest: "গিফট হিসেবেও দেওয়ার জন্য দারুণ একটি প্র্যাক্টিক্যাল প্যাকেজ" },
+        ],
+
+        // এখানেই সব প্রাইস — একবার বদলালে ব্যানার, ফর্ম, টোটাল সব জায়গায় বদলে যাবে
+        pricing: {
+          regular: 1500,
+          offer: 1499,
+          discountPercent: "৪০%",
+          shippingInside: 60,
+          shippingOutside: 110,
+        },
+
+        // এই বার্তাটা উপরের urgency bar এ দেখাবে
+        urgencyDiscountText: "৪০%",
+      };
+
+      // ══════════════ RENDER LOGIC — নিচের কোড সাধারণত বদলানোর দরকার নেই ══════════════
+      function taka(n) {
+        return "৳" + n.toLocaleString("bn-BD");
+      }
+
+      function renderConfig() {
+        // simple text bindings
+        document.querySelectorAll("[data-text]").forEach((el) => {
+          const key = el.getAttribute("data-text");
+          if (key === "discountPercent") {
+            el.textContent = CONFIG.pricing.discountPercent;
+          } else if (CONFIG[key] !== undefined) {
+            el.textContent = CONFIG[key];
+          }
+        });
+
+        // image bindings
+        document.querySelectorAll("[data-img]").forEach((el) => {
+          const key = el.getAttribute("data-img");
+          if (key === "videoThumbnail") {
+            el.src = `https://img.youtube.com/vi/${CONFIG.demoVideoId}/hqdefault.jpg`;
+          } else if (CONFIG.images[key]) {
+            el.src = CONFIG.images[key];
+          }
+        });
+
+        // phone tel: href
+        document.querySelectorAll("[data-phone-href]").forEach((el) => {
+          el.href = "tel:" + CONFIG.phone.replace(/[^0-9+]/g, "");
+        });
+
+        // items grid
+        const itemsGrid = document.getElementById("items-grid");
+        itemsGrid.innerHTML = CONFIG.items
+          .map(
+            (item) => `
+          <div class="flex gap-4 items-start border border-gray-200 rounded-lg p-4">
+            <div class="w-24 h-24 shrink-0 rounded-md overflow-hidden">
+              <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover" />
+            </div>
+            <div>
+              <h3 class="font-semibold mb-1">${item.title}</h3>
+              <p class="text-sm text-gray-600">${item.desc}</p>
+            </div>
+          </div>`,
+          )
+          .join("");
+
+        // features list
+        const featuresList = document.getElementById("features-list");
+        featuresList.innerHTML = CONFIG.features
+          .map(
+            (f) => `
+          <li class="flex gap-3">
+            <span class="text-green-600 mt-1">✔</span>
+            <span>${f.bold ? `<strong>${f.bold}</strong> — ` : ""}${f.rest}</span>
+          </li>`,
+          )
+          .join("");
+
+        updatePricing();
+      }
+
+      // pricing bindings react to the selected shipping option
+      function updatePricing() {
+        const p = CONFIG.pricing;
+        const selected = document.querySelector("[data-shipping-radio]:checked");
+        const shipping = selected && selected.value === "inside" ? p.shippingInside : p.shippingOutside;
+        const total = p.offer + shipping;
+
+        const priceMap = {
+          regularDisplay: taka(p.regular),
+          offerDisplay: taka(p.offer),
+          shippingInsideDisplay: taka(p.shippingInside),
+          shippingOutsideDisplay: taka(p.shippingOutside),
+          totalDisplay: taka(total),
+        };
+
+        document.querySelectorAll("[data-price]").forEach((el) => {
+          const key = el.getAttribute("data-price");
+          if (priceMap[key] !== undefined) el.textContent = priceMap[key];
+        });
+      }
+
+      document.querySelectorAll("[data-shipping-radio]").forEach((radio) => {
+        radio.addEventListener("change", updatePricing);
+      });
+
+      renderConfig();
+
+      // ভিডিও থাম্বনেইলে ক্লিক করলে ইউটিউব ভিডিও এমবেড হয়ে অটোপ্লে শুরু হবে
+      function playDemoVideo() {
+        const wrap = document.getElementById("video-player");
+        wrap.innerHTML = `<iframe
+          class="w-full h-full"
+          src="https://www.youtube.com/embed/${CONFIG.demoVideoId}?autoplay=1&rel=0"
+          title="Product demo video"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>`;
+      }
+
+      /* ══ URGENCY TIMER ══ */
+      (function () {
+        var K = "kitchenComboTimer";
+        function getEnd() {
+          var v = null;
+          try { v = localStorage.getItem(K); } catch (e) {}
+          var now = Date.now();
+          if (v && +v > now) return +v;
+          var end = now + (Math.floor(Math.random() * 3) + 1) * 3600000 + Math.random() * 1800000;
+          try { localStorage.setItem(K, end); } catch (e) {}
+          return end;
+        }
+        function pad(n) { return String(n).padStart(2, "0"); }
+        function tick() {
+          var remaining = getEnd() - Date.now();
+          if (remaining < 0) {
+            try { localStorage.removeItem(K); } catch (e) {}
+            remaining = getEnd() - Date.now();
+          }
+          var set = function (id, val) {
+            var el = document.getElementById(id);
+            if (el) el.textContent = val;
+          };
+          set("ubh", pad(Math.floor(remaining / 3600000) % 24));
+          set("ubm", pad(Math.floor(remaining / 60000) % 60));
+        }
+        tick();
+        setInterval(tick, 1000);
+      })();
+    </script>
+  </body>
 </html>
