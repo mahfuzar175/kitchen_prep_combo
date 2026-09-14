@@ -89,8 +89,8 @@
     <!-- ============ TOP URGENCY BAR ============ -->
     <div class="urgency-bar" id="urgencyBar">
       <div class="urgency-inner">
-        <span class="urgency-msg">⚠️ স্টক সীমিত <strong data-text="discountPercent"></strong> ছাড় পেতে অর্ডার করুন</span>
-        <span class="urgency-timer">⏱ <span id="ubh">00</span>:<span id="ubm">00</span></span>
+        <span class="urgency-msg">⚠️ সীমিত স্টকে পাওয়া যাচ্ছে, এখনই অর্ডার করুন</span>
+        <span class="urgency-timer">⏱ <span id="ubh">00</span>:<span id="ubm">00</span>:<span id="ubs">00</span></span>
         <a href="#order-form" class="urgency-btn">অর্ডার করুন →</a>
       </div>
       <button type="button" class="urgency-close" aria-label="বন্ধ করুন"
@@ -183,15 +183,19 @@
     </section>
 
     <!-- ============ PRICE BANNER ============ -->
-    <section class="bg-orange-900 text-white text-center py-10 px-5">
-      <p class="text-xl md:text-2xl font-semibold mb-2">
-        খুচরা মূল্য -
-        <span class="line-through decoration-red-400 decoration-2" data-price="regularDisplay"></span>
-      </p>
-      <p class="text-2xl md:text-3xl font-bold">
-        অফার মূল্য মাত্র-
-        <span class="text-green-400" data-price="offerDisplay"></span>
-      </p>
+    <section class="bg-gradient-to-br from-orange-800 via-orange-900 to-orange-950 text-white text-center py-12 px-5 relative overflow-hidden">
+      <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle, #fff 1px, transparent 1px); background-size: 22px 22px;"></div>
+
+      <div class="relative inline-block">
+        <div class="inline-flex flex-col items-center gap-2 bg-white/10 border border-white/20 backdrop-blur-sm rounded-2xl px-10 py-7 shadow-xl">
+          <span class="uppercase tracking-widest text-xs md:text-sm font-semibold text-orange-200">সীমিত সময়ের মূল্য</span>
+          <div class="flex items-end gap-1">
+            <span class="text-lg md:text-xl font-semibold text-orange-100">৳</span>
+            <span class="text-4xl md:text-5xl font-extrabold text-white drop-shadow" data-price="priceDisplayNumber"></span>
+          </div>
+          <span class="text-sm text-orange-200">সারা বাংলাদেশে ক্যাশ অন ডেলিভারি</span>
+        </div>
+      </div>
     </section>
 
     <!-- ============ CALL + CTA ============ -->
@@ -253,12 +257,12 @@
                 </div>
                 <span class="text-sm"><span data-text="productName"></span> (৪-ইন-১)&nbsp;&nbsp;×&nbsp;1</span>
               </div>
-              <span class="text-sm whitespace-nowrap" data-price="offerDisplay"></span>
+              <span class="text-sm whitespace-nowrap" data-price="priceDisplay"></span>
             </div>
 
             <div class="flex justify-between border-b border-gray-200 pb-3 mb-3">
               <span>Subtotal</span>
-              <span data-price="offerDisplay"></span>
+              <span data-price="priceDisplay"></span>
             </div>
 
             <div class="border-b border-gray-200 pb-3 mb-3">
@@ -283,13 +287,15 @@
             </div>
 
             <div class="bg-slate-50 border border-gray-200 rounded-md p-4 mb-4">
-              <p class="font-medium mb-1">Cash on delivery</p>
-              <p class="text-sm text-gray-600">Pay with cash upon delivery.</p>
+              <label class="flex items-center gap-2">
+                <input type="radio" name="payment" checked class="accent-orange-700 w-4 h-4"/>
+                <span class="font-semibold">Cash on delivery</span>
+              </label>
+              <p class="text-sm text-gray-600 mt-1 ml-6">Pay with cash upon delivery.</p>
             </div>
-
             <p class="text-xs text-gray-500 mb-4">
-              আপনার তথ্য শুধুমাত্র অর্ডার প্রসেস করার জন্য ব্যবহার করা হবে।
-              <a href="https://www.prodhan.com/privacy-policy" target="_blank" rel="noopener" class="underline">Privacy Policy</a>
+              আপনার তথ্য শুধুমাত্র অর্ডার প্রসেসিংয়ের জন্য ব্যবহৃত হবে।
+              <a href="https://www.prodhan.com/privacy-policy" target="_blank" rel="noopener" class="underline text-red-500">Privacy Policy</a>
             </p>
 
             <button class="pulse-cta w-full bg-orange-900 hover:bg-orange-800 text-white font-semibold py-3 rounded-md flex items-center justify-center gap-2">
@@ -331,11 +337,6 @@
         </div>
       </div>
     </footer>
-
-    <!-- ══════════════════════════════════════════════════════════
-         SINGLE SOURCE OF TRUTH — সব ডাটা ও ইমেজ লিংক এখানে বসান।
-         পুরো পেজের সব জায়গায় এখান থেকেই মান বসে যাবে।
-    ══════════════════════════════════════════════════════════ -->
     <script>
       const CONFIG = {
         shopName: "prodhan.com",
@@ -344,18 +345,12 @@
         tagline: "৪-ইন-১ কিচেন এসেনশিয়াল বান্ডেল",
         description:
           "রান্নাঘরের কাজ এখন হবে আরও দ্রুত, সহজ ও সুরক্ষিত! এই কমপ্লিট কিচেন প্রেপ কম্বো সেটে রয়েছে ভেজিটেবল চপার/ডাইসার, হ্যান্ড প্রেস চপার, সিলিকন গ্লাভস, মশলা বক্স ও ফিঙ্গার গার্ড — প্রতিদিনের রান্নার প্রস্তুতিকে করে তুলবে আরও গোছানো ও ঝামেলামুক্ত। প্রতিটি আইটেম আলাদাভাবে কেনার বদলে একসাথে পেয়ে যাচ্ছেন সম্পূর্ণ কিচেন সলিউশন, যা প্রিয়জনকে গিফট দেওয়ার জন্যও দারুণ একটি চয়েস।",
-
-        // ডেমো ভিডিও — শুধু ইউটিউব ভিডিও আইডি বসান, থাম্বনেইল অটোমেটিক লোড হবে
         demoVideoId: "TyMZIALMKvA",
-
-        // এখানেই সব ইমেজ লিংক — একবার বদলালে পুরো পেজে বদলে যাবে
         images: {
           hero: "https://storage.biddabari.online/biddabari-bucket/uploads/all/prodhan_asset/kitchen_prep_combo_asset/hero.webp",
           feature: "https://storage.biddabari.online/biddabari-bucket/uploads/all/prodhan_asset/kitchen_prep_combo_asset/hero.webp",
           cartThumbnail: "https://storage.biddabari.online/biddabari-bucket/uploads/all/prodhan_asset/kitchen_prep_combo_asset/hero.webp",
         },
-
-        // "এই কম্বোতে যা যা থাকছে" সেকশনের আইটেমগুলো
         items: [
           {
             image: "https://storage.biddabari.online/biddabari-bucket/uploads/all/prodhan_asset/kitchen_prep_combo_asset/chopper.webp",
@@ -378,8 +373,6 @@
             desc: "আঙুল কাটা থেকে বাঁচাতে এক্সট্রা সেফটি লেয়ার।",
           },
         ],
-
-        // "মূল বৈশিষ্ট্য" সেকশনের বুলেট পয়েন্ট
         features: [
           { bold: "সব টুলস এক প্যাকেজে", rest: "আলাদা আলাদা কেনার ঝামেলা নেই, খরচও সাশ্রয়ী" },
           { bold: "রান্নার প্রস্তুতির সময় বাঁচায়", rest: "সবজি কাটা থেকে মশলা গোছানো, সবকিছু দ্রুত হয়" },
@@ -390,21 +383,14 @@
           { bold: null, rest: "নতুন সংসার শুরু করা কাপল বা যেকোনো হাউজহোল্ডের জন্য পারফেক্ট" },
           { bold: null, rest: "গিফট হিসেবেও দেওয়ার জন্য দারুণ একটি প্র্যাক্টিক্যাল প্যাকেজ" },
         ],
-
-        // এখানেই সব প্রাইস — একবার বদলালে ব্যানার, ফর্ম, টোটাল সব জায়গায় বদলে যাবে
         pricing: {
-          regular: 1500,
-          offer: 1499,
-          discountPercent: "৪০%",
+          price: 1499,
           shippingInside: 60,
           shippingOutside: 110,
         },
-
-        // এই বার্তাটা উপরের urgency bar এ দেখাবে
-        urgencyDiscountText: "৪০%",
       };
 
-      // ══════════════ RENDER LOGIC — নিচের কোড সাধারণত বদলানোর দরকার নেই ══════════════
+     
       function taka(n) {
         return "৳" + n.toLocaleString("bn-BD");
       }
@@ -413,9 +399,7 @@
         // simple text bindings
         document.querySelectorAll("[data-text]").forEach((el) => {
           const key = el.getAttribute("data-text");
-          if (key === "discountPercent") {
-            el.textContent = CONFIG.pricing.discountPercent;
-          } else if (CONFIG[key] !== undefined) {
+          if (CONFIG[key] !== undefined) {
             el.textContent = CONFIG[key];
           }
         });
@@ -472,11 +456,11 @@
         const p = CONFIG.pricing;
         const selected = document.querySelector("[data-shipping-radio]:checked");
         const shipping = selected && selected.value === "inside" ? p.shippingInside : p.shippingOutside;
-        const total = p.offer + shipping;
+        const total = p.price + shipping;
 
         const priceMap = {
-          regularDisplay: taka(p.regular),
-          offerDisplay: taka(p.offer),
+          priceDisplay: taka(p.price),
+          priceDisplayNumber: p.price.toLocaleString("bn-BD"),
           shippingInsideDisplay: taka(p.shippingInside),
           shippingOutsideDisplay: taka(p.shippingOutside),
           totalDisplay: taka(total),
@@ -532,6 +516,7 @@
           };
           set("ubh", pad(Math.floor(remaining / 3600000) % 24));
           set("ubm", pad(Math.floor(remaining / 60000) % 60));
+          set("ubs", pad(Math.floor(remaining / 1000) % 60));
         }
         tick();
         setInterval(tick, 1000);
