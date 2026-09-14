@@ -176,6 +176,9 @@
       @media (max-width: 576px) {
         .lightbox-close { top: -14px; right: 0; }
       }
+      @media (max-width: 380px) {
+        .hero-heading { font-size: 1.15rem !important; line-height: 1.45 !important; }
+      }
     </style>
   </head>
   <body class="bg-white text-gray-900">
@@ -193,17 +196,18 @@
 
     <!-- ============ HERO SECTION ============ -->
     <section class="max-w-3xl mx-auto px-5 pt-10 pb-6 text-center">
-      <h1 class="text-2xl md:text-4xl font-extrabold leading-snug">
-        রান্নাঘরের সব প্রয়োজন এক প্যাকেজে <br />
-        <span class="text-orange-700" data-text="productName"></span> ব্যবহার করুন
+      <h1 class="hero-heading text-xl sm:text-2xl md:text-4xl font-extrabold leading-snug px-1" style="word-break: keep-all; overflow-wrap: break-word;">
+        রান্নাঘরের সব প্রয়োজন এক প্যাকেজে! <br />
+        <span class="text-orange-700 inline-block" data-text="productName"></span>
       </h1>
-      <p class="mt-3 text-gray-600" data-text="tagline"></p>
+      <p class="mt-2 text-gray-700 font-medium" style="font-size: 1.05rem;">রান্নার প্রস্তুতি হোক আরও সহজ, দ্রুত ও ঝামেলামুক্ত।</p>
 
       <div class="mt-8 border-4 border-orange-700 rounded-xl max-w-md mx-auto p-4">
         <div class="w-full aspect-square rounded-lg overflow-hidden">
           <img data-img="hero" alt="" class="w-full h-full object-cover rounded-lg" />
         </div>
       </div>
+      <p class="mt-2 text-gray-600" data-text="tagline"></p>
 
       <a href="#order-form" class="pulse-cta mt-6 inline-flex items-center gap-2 bg-orange-700 hover:bg-orange-800 text-white font-semibold px-8 py-3 rounded-md">
         <svg class="cart-icon" fill="white" width="20px" height="20px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.5,19A1.5,1.5,0,1,0,10,20.5,1.5,1.5,0,0,0,8.5,19ZM19,16H7a1,1,0,0,1,0-2h8.49121A3.0132,3.0132,0,0,0,18.376,11.82422L19.96143,6.2749A1.00009,1.00009,0,0,0,19,5H6.73907A3.00666,3.00666,0,0,0,3.92139,3H3A1,1,0,0,0,3,5h.92139a1.00459,1.00459,0,0,1,.96142.7251l.15552.54474.00024.00506L6.6792,12.01709A3.00006,3.00006,0,0,0,7,18H19a1,1,0,0,0,0-2ZM17.67432,7l-1.2212,4.27441A1.00458,1.00458,0,0,1,15.49121,12H8.75439l-.25494-.89221L7.32642,7ZM16.5,19A1.5,1.5,0,1,0,18,20.5,1.5,1.5,0,0,0,16.5,19Z"/></svg>অর্ডার করতে ক্লিক করুন
@@ -293,13 +297,21 @@
     </section>
 
     <!-- ============ CALL + CTA ============ -->
-    <div class="flex flex-col items-center gap-4 py-8 px-5">
-      <a data-phone-href="tel" class="bg-yellow-400 hover:bg-yellow-500 text-orange-950 font-bold px-6 py-3 rounded-md flex items-center gap-2">
-        📞 ফোন করুনঃ <span data-text="phone"></span>
-      </a>
-      <a href="#order-form" class="pulse-cta bg-orange-700 hover:bg-orange-800 text-white font-semibold px-8 py-3 rounded-md flex items-center gap-2">
+    <div class="flex flex-col items-center gap-3 py-8 px-5">
+      <a href="#order-form" class="pulse-cta bg-orange-700 hover:bg-orange-800 text-white font-semibold px-8 py-3 rounded-md flex items-center justify-center gap-2 w-full" style="max-width: 420px;">
         <svg class="cart-icon" fill="white" width="20px" height="20px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.5,19A1.5,1.5,0,1,0,10,20.5,1.5,1.5,0,0,0,8.5,19ZM19,16H7a1,1,0,0,1,0-2h8.49121A3.0132,3.0132,0,0,0,18.376,11.82422L19.96143,6.2749A1.00009,1.00009,0,0,0,19,5H6.73907A3.00666,3.00666,0,0,0,3.92139,3H3A1,1,0,0,0,3,5h.92139a1.00459,1.00459,0,0,1,.96142.7251l.15552.54474.00024.00506L6.6792,12.01709A3.00006,3.00006,0,0,0,7,18H19a1,1,0,0,0,0-2ZM17.67432,7l-1.2212,4.27441A1.00458,1.00458,0,0,1,15.49121,12H8.75439l-.25494-.89221L7.32642,7ZM16.5,19A1.5,1.5,0,1,0,18,20.5,1.5,1.5,0,0,0,16.5,19Z"/></svg>অর্ডার করতে ক্লিক করুন
       </a>
+      <div class="flex gap-3 w-full" style="max-width: 420px;">
+        <a data-phone-href="tel" class="bg-yellow-400 hover:bg-yellow-500 text-orange-950 font-bold px-4 py-3 rounded-md flex items-center justify-center gap-2 flex-1">
+          📞 ফোন করুন
+        </a>
+        <a data-whatsapp-href="wa" target="_blank" rel="noopener" class="bg-green-500 hover:bg-green-600 text-white font-bold px-4 py-3 rounded-md flex items-center justify-center gap-2 flex-1">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;">
+            <path d="M12.04 2c-5.46 0-9.9 4.44-9.9 9.9 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.005c5.46 0 9.9-4.44 9.9-9.9 0-2.64-1.03-5.13-2.9-7-1.87-1.87-4.36-2.94-7-2.94zm0 18.13h-.005a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.37c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.83 2.42a8.17 8.17 0 0 1 2.41 5.82c0 4.54-3.7 8.22-8.24 8.22zm4.52-6.16c-.25-.12-1.47-.72-1.7-.81-.23-.08-.4-.12-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.06-.39-2.01-1.24-.75-.66-1.25-1.48-1.4-1.73-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.15.16-.25.25-.42.08-.17.04-.31-.02-.43-.06-.12-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.42h-.48c-.17 0-.44.06-.67.31-.23.25-.87.85-.87 2.08s.89 2.41 1.02 2.58c.12.17 1.75 2.67 4.25 3.74.59.26 1.06.41 1.42.52.6.19 1.14.16 1.57.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.08.15-1.18-.06-.1-.23-.16-.48-.28z" fill="currentColor"/>
+          </svg>
+          হোয়াটসঅ্যাপ
+        </a>
+      </div>
     </div>
 
     <!-- ============ ORDER FORM ============ -->
@@ -432,7 +444,7 @@
           </div>
         </div>
         <div class="text-center" style="border-top: 1px solid #2b2b2b; margin-top: 24px; padding-top: 16px; font-size: 0.82rem; color: #8f8f8f;">
-         Copyright © 2026 Prodhan. All rights reserved
+         Copyright © 2026 prodhan.com All rights reserved
         </div>
       </div>
     </footer>
@@ -538,6 +550,12 @@
         // phone tel: href
         document.querySelectorAll("[data-phone-href]").forEach((el) => {
           el.href = "tel:" + CONFIG.phone.replace(/[^0-9+]/g, "");
+        });
+
+        // whatsapp wa.me href
+        document.querySelectorAll("[data-whatsapp-href]").forEach((el) => {
+          const digits = CONFIG.phone.replace(/[^0-9]/g, "");
+          el.href = "https://wa.me/" + digits;
         });
 
         // items grid
