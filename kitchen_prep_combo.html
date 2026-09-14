@@ -4,8 +4,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="" />
     <title>Kitchen Prep Combo Set - Checkout</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -81,6 +83,39 @@
       .pulse-cta:hover {
         animation: none;
         transform: translateY(-2px);
+      }
+
+      /* ══ STICKY BOTTOM ORDER BAR — mobile only ══ */
+      .sticky-order-bar {
+        display: none; /* desktop এ hidden */
+        position: fixed;
+        left: 0; right: 0; bottom: 0;
+        z-index: 40;
+        background: #fff;
+        border-top: 1px solid #e5e7eb;
+        box-shadow: 0 -4px 14px rgba(0,0,0,0.08);
+        padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+      }
+      .sticky-order-bar-inner {
+        max-width: 640px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .sticky-order-total {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.15;
+        flex-shrink: 0;
+      }
+      .sticky-order-total span:first-child { font-size: 11px; color: #6b7280; }
+      .sticky-order-total span:last-child { font-size: 17px; font-weight: 800; color: #7c2d12; }
+      .sticky-order-btn { flex: 1; text-align: center; }
+
+      @media (max-width: 767px) {
+        .sticky-order-bar { display: block; } /* mobile এ visible */
+        body { padding-bottom: 76px; } /* শুধু mobile এ body তে extra space, desktop এ দরকার নেই */
       }
     </style>
   </head>
@@ -215,6 +250,7 @@
           অর্ডার করতে নিচের ফর্মটি পূরণ করুন
         </h2>
 
+        <form id="orderForm" novalidate>
         <div class="grid md:grid-cols-2 gap-10">
           <!-- Billing & Shipping -->
           <div>
@@ -222,23 +258,26 @@
 
             <label class="block mb-4">
               <span class="block text-sm font-medium mb-1">আপনার নাম <span class="text-red-600">*</span></span>
-              <input type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-700" />
+              <input type="text" id="custName" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-700" />
+              <span class="text-red-600 text-xs mt-1 hidden" id="custNameError">অনুগ্রহ করে আপনার নাম লিখুন (কমপক্ষে ২ অক্ষর)</span>
             </label>
 
             <label class="block mb-4">
               <span class="block text-sm font-medium mb-1">মোবাইল নাম্বার <span class="text-red-600">*</span></span>
-              <input type="tel" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-700" />
+              <input type="tel" id="custPhone" maxlength="11" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-700" />
+              <span class="text-red-600 text-xs mt-1 hidden" id="custPhoneError">সঠিক বাংলাদেশি মোবাইল নম্বর দিন (01XXXXXXXXX)</span>
             </label>
 
             <label class="block mb-4">
               <span class="block text-sm font-medium mb-1">সম্পূর্ণ ঠিকানা <span class="text-red-600">*</span></span>
-              <input type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-700" />
+              <input type="text" id="custAddress" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-700" />
+              <span class="text-red-600 text-xs mt-1 hidden" id="custAddressError">অনুগ্রহ করে সম্পূর্ণ ঠিকানা লিখুন</span>
             </label>
-
+<!-- 
             <div>
               <span class="block text-sm font-medium mb-1">Country / Region <span class="text-red-600">*</span></span>
               <p class="text-gray-700">Bangladesh</p>
-            </div>
+            </div> -->
           </div>
 
           <!-- Order summary -->
@@ -294,15 +333,16 @@
               <p class="text-sm text-gray-600 mt-1 ml-6">Pay with cash upon delivery.</p>
             </div>
             <p class="text-xs text-gray-500 mb-4">
-              আপনার তথ্য শুধুমাত্র অর্ডার প্রসেসিংয়ের জন্য ব্যবহৃত হবে।
+              আপনার তথ্য শুধুমাত্র অর্ডার প্রসেসিংয়ের জন্য ব্যবহৃত হবে।
               <a href="https://www.prodhan.com/privacy-policy" target="_blank" rel="noopener" class="underline text-red-500">Privacy Policy</a>
             </p>
 
-            <button class="pulse-cta w-full bg-orange-900 hover:bg-orange-800 text-white font-semibold py-3 rounded-md flex items-center justify-center gap-2">
+            <button type="submit" id="submitBtn" class="pulse-cta w-full bg-orange-900 hover:bg-orange-800 text-white font-semibold py-3 rounded-md flex items-center justify-center gap-2">
               🔒 Place Order&nbsp; <span data-price="totalDisplay"></span>
             </button>
           </div>
         </div>
+        </form>
       </div>
     </section>
 
@@ -337,6 +377,20 @@
         </div>
       </div>
     </footer>
+
+    <!-- ============ STICKY BOTTOM ORDER BAR ============ -->
+    <div class="sticky-order-bar" id="stickyOrderBar">
+      <div class="sticky-order-bar-inner">
+        <div class="sticky-order-total">
+          <span>মোট মূল্য</span>
+          <span data-price="totalDisplay"></span>
+        </div>
+        <a href="#order-form" class="sticky-order-btn pulse-cta bg-orange-700 hover:bg-orange-800 text-white font-semibold py-3 rounded-md flex items-center justify-center gap-2" id="stickyOrderBtn">
+          🔒 Place Order
+        </a>
+      </div>
+    </div>
+
     <script>
       const CONFIG = {
         shopName: "prodhan.com",
@@ -477,6 +531,111 @@
       });
 
       renderConfig();
+
+      // ---- Form validation (name, phone, address) ----
+      const bdPhoneRegex = /^01[3-9]\d{8}$/;
+      const orderForm = document.getElementById("orderForm");
+
+      function showError(inputId, errorId, show) {
+        const input = document.getElementById(inputId);
+        const error = document.getElementById(errorId);
+        input.classList.toggle("border-red-500", show);
+        input.classList.toggle("border-gray-300", !show);
+        error.classList.toggle("hidden", !show);
+      }
+
+      orderForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const name = document.getElementById("custName");
+        const phone = document.getElementById("custPhone");
+        const address = document.getElementById("custAddress");
+
+        let valid = true;
+
+        if (name.value.trim().length < 2) {
+          showError("custName", "custNameError", true);
+          valid = false;
+        } else {
+          showError("custName", "custNameError", false);
+        }
+
+        if (!bdPhoneRegex.test(phone.value.trim())) {
+          showError("custPhone", "custPhoneError", true);
+          valid = false;
+        } else {
+          showError("custPhone", "custPhoneError", false);
+        }
+
+        if (address.value.trim().length < 5) {
+          showError("custAddress", "custAddressError", true);
+          valid = false;
+        } else {
+          showError("custAddress", "custAddressError", false);
+        }
+
+        if (!valid) {
+          orderForm.querySelector(".border-red-500")?.scrollIntoView({ behavior: "smooth", block: "center" });
+          return;
+        }
+
+        // ---- Build order payload (kept ready for when the backend API is connected) ----
+        const selectedShipping = document.querySelector("[data-shipping-radio]:checked");
+        const shippingZone = selectedShipping && selectedShipping.value === "inside" ? "inside" : "outside";
+        const shippingCharge = shippingZone === "inside" ? CONFIG.pricing.shippingInside : CONFIG.pricing.shippingOutside;
+        const grandTotal = CONFIG.pricing.price + shippingCharge;
+
+        const requestData = {
+          name: name.value.trim(),
+          phone: phone.value.trim(),
+          address: address.value.trim(),
+          shipping_zone: shippingZone,
+          city: shippingZone === "inside" ? "Inside Dhaka" : "Outside Dhaka",
+          product: {
+            name: CONFIG.productName,
+            price: CONFIG.pricing.price,
+            quantity: 1,
+          },
+          shipping_charge: shippingCharge,
+          total: grandTotal,
+          payment_method: "cash_on_delivery",
+          payment_status: "unpaid",
+          delivery_status: "pending",
+        };
+
+        console.log("Order payload (API call not connected yet):", requestData);
+
+        // ---- TEMP: mock success — replace this block with the real fetch() call later ----
+        if (typeof Swal !== "undefined") {
+          Swal.fire({
+            icon: "success",
+            title: "✅ অর্ডার সফল হয়েছে!",
+            html: `ধন্যবাদ <b>${requestData.name}</b>! আমাদের প্রতিনিধি শীঘ্রই আপনার নম্বরে (<b>${requestData.phone}</b>) ফোন করে অর্ডার কনফার্ম করবেন।`,
+            confirmButtonText: "ঠিক আছে",
+            confirmButtonColor: "#c2410c",
+          }).then(() => {
+            orderForm.reset();
+            updatePricing();
+          });
+        } else {
+          alert("✅ অর্ডার সফল হয়েছে! ধন্যবাদ " + requestData.name + "।");
+          orderForm.reset();
+          updatePricing();
+        }
+      });
+
+      // ---- Sticky bottom bar button also submits the form (same validation as the main button) ----
+      const stickyOrderBtn = document.getElementById("stickyOrderBtn");
+      if (stickyOrderBtn) {
+        stickyOrderBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          if (orderForm.requestSubmit) {
+            orderForm.requestSubmit();
+          } else {
+            orderForm.dispatchEvent(new Event("submit", { cancelable: true }));
+          }
+        });
+      }
 
       // ভিডিও থাম্বনেইলে ক্লিক করলে ইউটিউব ভিডিও এমবেড হয়ে অটোপ্লে শুরু হবে
       function playDemoVideo() {
