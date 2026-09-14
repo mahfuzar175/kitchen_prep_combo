@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="bn">
   <head>
@@ -179,6 +178,39 @@
       @media (max-width: 380px) {
         .hero-heading { font-size: 1.15rem !important; line-height: 1.45 !important; }
       }
+
+      /* ══ QUANTITY SELECTOR ══ */
+      .qty-selector {
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .qty-btn {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f9fafb;
+        color: #7c2d12;
+        font-weight: 800;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+        user-select: none;
+        transition: background 0.15s;
+      }
+      .qty-btn:hover { background: #ffedd5; }
+      .qty-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+      .qty-value {
+        width: 26px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 14px;
+        color: #1f2937;
+      }
     </style>
   </head>
   <body class="bg-white text-gray-900">
@@ -344,11 +376,6 @@
               <input type="text" id="custAddress" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-700" />
               <span class="text-red-600 text-xs mt-1 hidden" id="custAddressError">অনুগ্রহ করে সম্পূর্ণ ঠিকানা লিখুন</span>
             </label>
-<!-- 
-            <div>
-              <span class="block text-sm font-medium mb-1">Country / Region <span class="text-red-600">*</span></span>
-              <p class="text-gray-700">Bangladesh</p>
-            </div> -->
           </div>
 
           <!-- Order summary -->
@@ -365,14 +392,21 @@
                 <div class="w-12 h-12 rounded overflow-hidden">
                   <img data-img="cartThumbnail" alt="" class="w-full h-full object-cover rounded" />
                 </div>
-                <span class="text-sm"><span data-text="productName"></span> (৪-ইন-১)&nbsp;&nbsp;×&nbsp;1</span>
+                <div>
+                  <span class="text-sm block"><span data-text="productName"></span> (৪-ইন-১)</span>
+                  <div class="qty-selector mt-1.5">
+                    <button type="button" id="qtyMinus" class="qty-btn" aria-label="কমান">−</button>
+                    <span id="qtyValue" class="qty-value">1</span>
+                    <button type="button" id="qtyPlus" class="qty-btn" aria-label="বাড়ান">+</button>
+                  </div>
+                </div>
               </div>
-              <span class="text-sm whitespace-nowrap" data-price="priceDisplay"></span>
+              <span class="text-sm whitespace-nowrap" data-price="itemSubtotalDisplay"></span>
             </div>
 
             <div class="flex justify-between border-b border-gray-200 pb-3 mb-3">
               <span>Subtotal</span>
-              <span data-price="priceDisplay"></span>
+              <span data-price="itemSubtotalDisplay"></span>
             </div>
 
             <div class="border-b border-gray-200 pb-3 mb-3">
@@ -474,10 +508,11 @@
       const CONFIG = {
         shopName: "prodhan.com",
         phone: "+8809643330000",
+        whatsappPhone: "01894842442",
         productName: "Kitchen Prep Combo Set",
         tagline: "৪-ইন-১ কিচেন এসেনশিয়াল বান্ডেল",
         description:
-          "রান্নাঘরের কাজ এখন হবে আরও দ্রুত, সহজ ও সুরক্ষিত! এই কমপ্লিট কিচেন প্রেপ কম্বো সেটে রয়েছে ভেজিটেবল চপার/ডাইসার, হ্যান্ড প্রেস চপার, সিলিকন গ্লাভস, মশলা বক্স ও ফিঙ্গার গার্ড — প্রতিদিনের রান্নার প্রস্তুতিকে করে তুলবে আরও গোছানো ও ঝামেলামুক্ত। প্রতিটি আইটেম আলাদাভাবে কেনার বদলে একসাথে পেয়ে যাচ্ছেন সম্পূর্ণ কিচেন সলিউশন, যা প্রিয়জনকে গিফট দেওয়ার জন্যও দারুণ একটি চয়েস।",
+          "রান্নাঘরের কাজ এখন হবে আরও দ্রুত, সহজ ও সুরক্ষিত! এই কমপ্লিট কিচেন প্রেপ কম্বো সেটে রয়েছে ভেজিটেবল চপার/ডাইসার, হ্যান্ড প্রেস চপার, সিলিকন গ্লাভস, মশলা বক্স ও ফিঙ্গার গার্ড প্রতিদিনের রান্নার প্রস্তুতিকে করে তুলবে আরও গোছানো ও ঝামেলামুক্ত। প্রতিটি আইটেম আলাদাভাবে কেনার বদলে একসাথে পেয়ে যাচ্ছেন সম্পূর্ণ কিচেন সলিউশন, যা প্রিয়জনকে গিফট দেওয়ার জন্যও দারুণ একটি চয়েস।",
         demoVideoId: "mYHr11upy98",
         images: {
           hero: "https://storage.biddabari.online/biddabari-bucket/uploads/all/prodhan_asset/kitchen_prep_combo_asset/hero.webp",
@@ -523,7 +558,11 @@
         },
       };
 
-     
+      // ---- Quantity state ----
+      // MAX_QTY removed intentionally — no upper cap on quantity, user can add as many as they want.
+      let quantity = 1;
+      const MIN_QTY = 1;
+
       function taka(n) {
         return "৳" + n.toLocaleString("bn-BD");
       }
@@ -554,7 +593,9 @@
 
         // whatsapp wa.me href
         document.querySelectorAll("[data-whatsapp-href]").forEach((el) => {
-          const digits = CONFIG.phone.replace(/[^0-9]/g, "");
+          let digits = CONFIG.whatsappPhone.replace(/[^0-9]/g, "");
+          // local BD format (01XXXXXXXXX) হলে দেশের কোড 88 যোগ করা হচ্ছে
+          if (digits.startsWith("0")) digits = "88" + digits;
           el.href = "https://wa.me/" + digits;
         });
 
@@ -590,16 +631,18 @@
         updatePricing();
       }
 
-      // pricing bindings react to the selected shipping option
+      // pricing bindings react to the selected shipping option AND quantity
       function updatePricing() {
         const p = CONFIG.pricing;
         const selected = document.querySelector("[data-shipping-radio]:checked");
         const shipping = selected && selected.value === "inside" ? p.shippingInside : p.shippingOutside;
-        const total = p.price + shipping;
+        const itemSubtotal = p.price * quantity;
+        const total = itemSubtotal + shipping;
 
         const priceMap = {
           priceDisplay: taka(p.price),
           priceDisplayNumber: p.price.toLocaleString("bn-BD"),
+          itemSubtotalDisplay: taka(itemSubtotal),
           shippingInsideDisplay: taka(p.shippingInside),
           shippingOutsideDisplay: taka(p.shippingOutside),
           totalDisplay: taka(total),
@@ -609,11 +652,36 @@
           const key = el.getAttribute("data-price");
           if (priceMap[key] !== undefined) el.textContent = priceMap[key];
         });
+
+        // keep quantity buttons in sync
+        const qtyValueEl = document.getElementById("qtyValue");
+        if (qtyValueEl) qtyValueEl.textContent = quantity;
+        const qtyMinusBtn = document.getElementById("qtyMinus");
+        if (qtyMinusBtn) qtyMinusBtn.disabled = quantity <= MIN_QTY;
+        // qtyPlus never disabled — no upper limit
       }
 
       document.querySelectorAll("[data-shipping-radio]").forEach((radio) => {
         radio.addEventListener("change", updatePricing);
       });
+
+      // ---- Quantity +/- button handlers ----
+      const qtyMinusBtn = document.getElementById("qtyMinus");
+      const qtyPlusBtn = document.getElementById("qtyPlus");
+      if (qtyMinusBtn) {
+        qtyMinusBtn.addEventListener("click", function () {
+          if (quantity > MIN_QTY) {
+            quantity -= 1;
+            updatePricing();
+          }
+        });
+      }
+      if (qtyPlusBtn) {
+        qtyPlusBtn.addEventListener("click", function () {
+          quantity += 1;
+          updatePricing();
+        });
+      }
 
       renderConfig();
 
@@ -686,7 +754,8 @@
         const selectedShipping = document.querySelector("[data-shipping-radio]:checked");
         const shippingZone = selectedShipping && selectedShipping.value === "inside" ? "inside" : "outside";
         const shippingCharge = shippingZone === "inside" ? CONFIG.pricing.shippingInside : CONFIG.pricing.shippingOutside;
-        const grandTotal = CONFIG.pricing.price + shippingCharge;
+        const itemSubtotal = CONFIG.pricing.price * quantity;
+        const grandTotal = itemSubtotal + shippingCharge;
 
         const requestData = {
           name: name.value.trim(),
@@ -697,7 +766,8 @@
           product: {
             name: CONFIG.productName,
             price: CONFIG.pricing.price,
-            quantity: 1,
+            quantity: quantity,
+            subtotal: itemSubtotal,
           },
           shipping_charge: shippingCharge,
           total: grandTotal,
@@ -718,11 +788,13 @@
             confirmButtonColor: "#c2410c",
           }).then(() => {
             orderForm.reset();
+            quantity = 1;
             updatePricing();
           });
         } else {
           alert("✅ অর্ডার সফল হয়েছে! ধন্যবাদ " + requestData.name + "।");
           orderForm.reset();
+          quantity = 1;
           updatePricing();
         }
       });
