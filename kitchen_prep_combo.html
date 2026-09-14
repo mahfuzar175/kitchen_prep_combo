@@ -11,6 +11,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
+        rel="icon"
+        href="https://storage.biddabari.online/biddabari-bucket/uploads/all/4PCgKQGv93MGiJXMIdyMFGboRpRR2GV8YNam0JIE.webp"
+    />
+    <link
       href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@100..800&family=Noto+Sans+Bengali:wght@100..900&display=swap"
       rel="stylesheet"
     />
@@ -94,7 +98,7 @@
         background: #fff;
         border-top: 1px solid #e5e7eb;
         box-shadow: 0 -4px 14px rgba(0,0,0,0.08);
-        padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+        padding: 18px 16px calc(10px + env(safe-area-inset-bottom));
       }
       .sticky-order-bar-inner {
         max-width: 640px;
@@ -117,6 +121,61 @@
         .sticky-order-bar { display: block; } /* mobile এ visible */
         body { padding-bottom: 76px; } /* শুধু mobile এ body তে extra space, desktop এ দরকার নেই */
       }
+
+      /* ══ ITEM IMAGE ZOOM LIGHTBOX ══ */
+      .item-thumb-btn {
+        cursor: zoom-in;
+        border: none;
+        padding: 0;
+        background: none;
+        display: block;
+      }
+      .lightbox-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        background: rgba(0, 0, 0, 0.85);
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      .lightbox-overlay.active {
+        display: flex;
+      }
+      .lightbox-content {
+        max-width: 92vw;
+        max-height: 88vh;
+        position: relative;
+      }
+      .lightbox-content img {
+        max-width: 92vw;
+        max-height: 88vh;
+        border-radius: 10px;
+        object-fit: contain;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      }
+      .lightbox-close {
+        position: absolute;
+        top: -18px;
+        right: -18px;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #fff;
+        color: #c2410c;
+        border: none;
+        font-size: 18px;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+      }
+      @media (max-width: 576px) {
+        .lightbox-close { top: -14px; right: 0; }
+      }
     </style>
   </head>
   <body class="bg-white text-gray-900">
@@ -124,7 +183,7 @@
     <!-- ============ TOP URGENCY BAR ============ -->
     <div class="urgency-bar" id="urgencyBar">
       <div class="urgency-inner">
-        <span class="urgency-msg">⚠️ সীমিত স্টকে পাওয়া যাচ্ছে, এখনই অর্ডার করুন</span>
+        <span class="urgency-msg">⚠️ স্টক সীমিত, এখনই অর্ডার করুন</span>
         <span class="urgency-timer">⏱ <span id="ubh">00</span>:<span id="ubm">00</span>:<span id="ubs">00</span></span>
         <a href="#order-form" class="urgency-btn">অর্ডার করুন →</a>
       </div>
@@ -337,8 +396,8 @@
               <a href="https://www.prodhan.com/privacy-policy" target="_blank" rel="noopener" class="underline text-red-500">Privacy Policy</a>
             </p>
 
-            <button type="submit" id="submitBtn" class="pulse-cta w-full bg-orange-900 hover:bg-orange-800 text-white font-semibold py-3 rounded-md flex items-center justify-center gap-2">
-              🔒 Place Order&nbsp; <span data-price="totalDisplay"></span>
+            <button type="submit" id="submitBtn" class="pulse-cta w-full bg-orange-700 hover:bg-orange-800 text-white font-semibold py-3 rounded-md flex items-center justify-center gap-2">
+              <svg class="cart-icon" fill="white" width="20px" height="20px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.5,19A1.5,1.5,0,1,0,10,20.5,1.5,1.5,0,0,0,8.5,19ZM19,16H7a1,1,0,0,1,0-2h8.49121A3.0132,3.0132,0,0,0,18.376,11.82422L19.96143,6.2749A1.00009,1.00009,0,0,0,19,5H6.73907A3.00666,3.00666,0,0,0,3.92139,3H3A1,1,0,0,0,3,5h.92139a1.00459,1.00459,0,0,1,.96142.7251l.15552.54474.00024.00506L6.6792,12.01709A3.00006,3.00006,0,0,0,7,18H19a1,1,0,0,0,0-2ZM17.67432,7l-1.2212,4.27441A1.00458,1.00458,0,0,1,15.49121,12H8.75439l-.25494-.89221L7.32642,7ZM16.5,19A1.5,1.5,0,1,0,18,20.5,1.5,1.5,0,0,0,16.5,19Z"/></svg> অর্ডার করুন&nbsp; <span data-price="totalDisplay"></span>
             </button>
           </div>
         </div>
@@ -386,8 +445,16 @@
           <span data-price="totalDisplay"></span>
         </div>
         <a href="#order-form" class="sticky-order-btn pulse-cta bg-orange-700 hover:bg-orange-800 text-white font-semibold py-3 rounded-md flex items-center justify-center gap-2" id="stickyOrderBtn">
-          🔒 Place Order
+          <svg class="cart-icon" fill="white" width="20px" height="20px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.5,19A1.5,1.5,0,1,0,10,20.5,1.5,1.5,0,0,0,8.5,19ZM19,16H7a1,1,0,0,1,0-2h8.49121A3.0132,3.0132,0,0,0,18.376,11.82422L19.96143,6.2749A1.00009,1.00009,0,0,0,19,5H6.73907A3.00666,3.00666,0,0,0,3.92139,3H3A1,1,0,0,0,3,5h.92139a1.00459,1.00459,0,0,1,.96142.7251l.15552.54474.00024.00506L6.6792,12.01709A3.00006,3.00006,0,0,0,7,18H19a1,1,0,0,0,0-2ZM17.67432,7l-1.2212,4.27441A1.00458,1.00458,0,0,1,15.49121,12H8.75439l-.25494-.89221L7.32642,7ZM16.5,19A1.5,1.5,0,1,0,18,20.5,1.5,1.5,0,0,0,16.5,19Z"/></svg> অর্ডার করুন
         </a>
+      </div>
+    </div>
+
+    <!-- ============ IMAGE ZOOM LIGHTBOX ============ -->
+    <div class="lightbox-overlay" id="lightboxOverlay" onclick="if(event.target===this) closeLightbox()">
+      <div class="lightbox-content">
+        <button type="button" class="lightbox-close" aria-label="বন্ধ করুন" onclick="closeLightbox()">✕</button>
+        <img id="lightboxImg" src="" alt="" />
       </div>
     </div>
 
@@ -399,7 +466,7 @@
         tagline: "৪-ইন-১ কিচেন এসেনশিয়াল বান্ডেল",
         description:
           "রান্নাঘরের কাজ এখন হবে আরও দ্রুত, সহজ ও সুরক্ষিত! এই কমপ্লিট কিচেন প্রেপ কম্বো সেটে রয়েছে ভেজিটেবল চপার/ডাইসার, হ্যান্ড প্রেস চপার, সিলিকন গ্লাভস, মশলা বক্স ও ফিঙ্গার গার্ড — প্রতিদিনের রান্নার প্রস্তুতিকে করে তুলবে আরও গোছানো ও ঝামেলামুক্ত। প্রতিটি আইটেম আলাদাভাবে কেনার বদলে একসাথে পেয়ে যাচ্ছেন সম্পূর্ণ কিচেন সলিউশন, যা প্রিয়জনকে গিফট দেওয়ার জন্যও দারুণ একটি চয়েস।",
-        demoVideoId: "TyMZIALMKvA",
+        demoVideoId: "mYHr11upy98",
         images: {
           hero: "https://storage.biddabari.online/biddabari-bucket/uploads/all/prodhan_asset/kitchen_prep_combo_asset/hero.webp",
           feature: "https://storage.biddabari.online/biddabari-bucket/uploads/all/prodhan_asset/kitchen_prep_combo_asset/hero.webp",
@@ -479,9 +546,9 @@
           .map(
             (item) => `
           <div class="flex gap-4 items-start border border-gray-200 rounded-lg p-4">
-            <div class="w-24 h-24 shrink-0 rounded-md overflow-hidden">
+            <button type="button" class="item-thumb-btn w-24 h-24 shrink-0 rounded-md overflow-hidden" onclick="openLightbox('${item.image}', '${item.title.replace(/'/g, "\\'")}')">
               <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover" />
-            </div>
+            </button>
             <div>
               <h3 class="font-semibold mb-1">${item.title}</h3>
               <p class="text-sm text-gray-600">${item.desc}</p>
@@ -495,8 +562,8 @@
         featuresList.innerHTML = CONFIG.features
           .map(
             (f) => `
-          <li class="flex gap-3">
-            <span class="text-green-600 mt-1">✔</span>
+          <li class="flex gap-3 items-start">
+            <span class="flex-shrink-0 flex items-center justify-center rounded-full" style="width:22px;height:22px;background:rgba(22,163,74,0.12);color:#16a34a;font-size:12px;font-weight:800;">✔</span>
             <span>${f.bold ? `<strong>${f.bold}</strong> — ` : ""}${f.rest}</span>
           </li>`,
           )
@@ -531,6 +598,24 @@
       });
 
       renderConfig();
+
+      // ---- Item image zoom lightbox ----
+      function openLightbox(src, alt) {
+        const overlay = document.getElementById("lightboxOverlay");
+        const img = document.getElementById("lightboxImg");
+        img.src = src;
+        img.alt = alt || "";
+        overlay.classList.add("active");
+        document.body.style.overflow = "hidden";
+      }
+      function closeLightbox() {
+        const overlay = document.getElementById("lightboxOverlay");
+        overlay.classList.remove("active");
+        document.body.style.overflow = "";
+      }
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeLightbox();
+      });
 
       // ---- Form validation (name, phone, address) ----
       const bdPhoneRegex = /^01[3-9]\d{8}$/;
